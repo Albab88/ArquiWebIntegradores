@@ -4,6 +4,6 @@ import entities.Cliente;
 
 import java.util.List;
 
-public interface ClienteDAO {
+public interface ClienteDAO extends EntityDAO<Cliente>{
     List<Cliente> getClientesOrdenadosPorFacturacion();
 }

@@ -2,6 +2,6 @@ package dao;
 
 import entities.Producto;
 
-public interface ProductoDAO {
+public interface ProductoDAO extends EntityDAO<Producto>{
     Producto getProductoMasVendido();
 }

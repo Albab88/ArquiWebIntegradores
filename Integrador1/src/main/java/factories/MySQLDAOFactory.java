@@ -1,59 +1,26 @@
 package factories;
 
 import dao.*;
+import dao.MySQL.MySQLClienteDAO;
+import dao.MySQL.MySQLFacturaDAO;
+import dao.MySQL.MySQLProductoDAO;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Objects;
 
 public class MySQLDAOFactory extends AbstractFactory{
-        private static MySQLDAOFactory instance = null;
 
-        public static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-        public static final String uri = "jdbc:mysql://localhost:3306/demodao";
-        public static Connection conn;
+    private static MySQLDAOFactory instance = null;
 
-        private MySQLDAOFactory() {
-        }
-
-        public static synchronized MySQLDAOFactory getInstance() {
-            if (instance == null) {
-                instance = new MySQLDAOFactory();
-            }
-            return instance;
-        }
-
-        public static Connection createConnection() {
-            if (conn != null) {
-                return conn;
-            }
-            String driver = DRIVER;
-            try {
-                Class.forName(driver).getDeclaredConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException |
-                     InvocationTargetException
-                     | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-
-            try {
-                conn = DriverManager.getConnection(uri, "root", "");
-                conn.setAutoCommit(false);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return conn;
-        }
-
-        public void closeConnection() {
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+    public static synchronized MySQLDAOFactory getInstance() {
+      if (instance == null) {
+        instance = new MySQLDAOFactory();
+      }
+      return instance;
+    }
 
     @Override
     public ClienteDAO getClienteDAO() {

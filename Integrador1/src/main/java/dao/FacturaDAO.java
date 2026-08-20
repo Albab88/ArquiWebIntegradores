@@ -1,4 +1,6 @@
 package dao;
 
-public interface FacturaDAO {
+import entities.Factura;
+
+public interface FacturaDAO extends EntityDAO<Factura>{
 }
