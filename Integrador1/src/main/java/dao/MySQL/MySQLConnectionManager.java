@@ -8,7 +8,13 @@ import java.sql.SQLException;
 public class MySQLConnectionManager {
 
   private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-  private static final String URI = "jdbc:mysql://localhost:3306/demodao";
+
+  private static final String HOST = "localhost";
+  private static final int PORT = 3306;
+  private static final String DATABASE = "integrador1";
+
+  private static final String USER = "root";
+  private static final String PASSWORD = "";
 
   private static Connection conn;
 
@@ -16,8 +22,11 @@ public class MySQLConnectionManager {
     try {
       if (conn == null || conn.isClosed()) {
         Class.forName(DRIVER).getDeclaredConstructor().newInstance();
-        conn = DriverManager.getConnection(URI, "root", "");
-        conn.setAutoCommit(false);
+        conn = DriverManager.getConnection(
+            "jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE,
+            USER,
+            PASSWORD
+        );
       }
     } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException |
         ClassNotFoundException | SQLException e) {

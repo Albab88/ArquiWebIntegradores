@@ -42,9 +42,9 @@ public class CSVLoader {
       FacturaDAO facturaDAO = factory.getFacturaDAO();
 
 
-      clientes.values().forEach(clienteDAO::crear);
-      productos.values().forEach(productoDAO::crear);
-      facturas.values().forEach(facturaDAO::crear);
+      clienteDAO.crear(clientes.values());
+      productoDAO.crear(productos.values());
+      facturaDAO.crear(facturas.values());
 
     } catch (IOException | IllegalStateException e) {
       e.printStackTrace();
