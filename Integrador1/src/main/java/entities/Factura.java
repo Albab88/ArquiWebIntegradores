@@ -2,6 +2,7 @@ package entities;
 
 import lombok.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -9,8 +10,10 @@ import java.util.Map;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Factura {
     private Integer idFactura;
     private Cliente cliente;
-    private Map<Producto, Integer> productos;
+    @Builder.Default
+    private Map<Producto, Integer> productos = new HashMap<>();
 }
