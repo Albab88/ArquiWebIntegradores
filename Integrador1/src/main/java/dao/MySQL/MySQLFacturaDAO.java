@@ -11,18 +11,21 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MySQLFacturaDAO implements FacturaDAO {
 
   @Override
   public void crear(Factura factura) {
-    Connection conn = MySQLConnectionManager.getConnection();
+    if (Objects.isNull(factura)) return;
 
     String sqlFactura = "INSERT INTO factura (idFactura, idCliente) VALUES (?, ?)";
     String sqlDetalle = "INSERT INTO detalle_factura (idFactura, idProducto, cantidad) VALUES (?, ?, ?)";
 
-    try (PreparedStatement psFactura = conn.prepareStatement(sqlFactura); PreparedStatement psDetalle = conn.prepareStatement(sqlDetalle)) {
+    try (Connection conn = MySQLConnectionManager.getConnection();
+        PreparedStatement psFactura = conn.prepareStatement(sqlFactura);
+        PreparedStatement psDetalle = conn.prepareStatement(sqlDetalle)) {
 
       psFactura.setInt(1, factura.getIdFactura());
       psFactura.setInt(2, factura.getCliente().getIdCliente());
@@ -43,17 +46,17 @@ public class MySQLFacturaDAO implements FacturaDAO {
 
   @Override
   public void crear(Collection<Factura> facturas) {
-    if (facturas.isEmpty()) return;
+    if (Objects.isNull(facturas) || facturas.isEmpty()) return;
 
-    Connection conn = MySQLConnectionManager.getConnection();
-
-    boolean facturasInsertadas = insertarFacturas(conn, facturas);
-    if (facturasInsertadas) {
+    try (Connection conn = MySQLConnectionManager.getConnection()) {
+      insertarFacturas(conn, facturas);
       insertarDetalles(conn, facturas);
+    } catch (SQLException e){
+      e.printStackTrace();
     }
   }
 
-  private boolean insertarFacturas(Connection conn, Collection<Factura> facturas) {
+  private void insertarFacturas(Connection conn, Collection<Factura> facturas) throws SQLException {
     String placeholders = facturas.stream()
         .map(f -> "(?, ?)")
         .collect(Collectors.joining(", "));
@@ -66,14 +69,10 @@ public class MySQLFacturaDAO implements FacturaDAO {
         ps.setInt(i++, f.getCliente().getIdCliente());
       }
       ps.executeUpdate();
-      return true;
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return false;
     }
   }
 
-  private void insertarDetalles(Connection conn, Collection<Factura> facturas) {
+  private void insertarDetalles(Connection conn, Collection<Factura> facturas) throws SQLException {
     int totalDetalles = facturas.stream().mapToInt(f -> f.getProductos().size()).sum();
     if (totalDetalles == 0) return;
 
@@ -90,8 +89,6 @@ public class MySQLFacturaDAO implements FacturaDAO {
         }
       }
       ps.executeUpdate();
-    } catch (SQLException e) {
-      e.printStackTrace();
     }
   }
 

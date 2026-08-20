@@ -10,38 +10,39 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MySQLClienteDAO implements ClienteDAO {
 
     @Override
     public void crear(Cliente cliente) {
-        Connection conn = MySQLConnectionManager.getConnection();
+        if(Objects.isNull(cliente)) return;
+
         String sql = "INSERT INTO cliente (idCliente, nombre, email) VALUES (?, ?, ?)";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = MySQLConnectionManager.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, cliente.getIdCliente());
             ps.setString(2, cliente.getNombre());
             ps.setString(3, cliente.getEmail());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            MySQLConnectionManager.closeConnection();
         }
     }
 
     @Override
     public void crear(Collection<Cliente> clientes) {
-        if (clientes.isEmpty()) return;
+        if (Objects.isNull(clientes) || clientes.isEmpty()) return;
 
-        Connection conn = MySQLConnectionManager.getConnection();
         String placeholders = clientes.stream()
             .map(c -> "(?, ?, ?)")
             .collect(Collectors.joining(", "));
 
         String sql = "INSERT INTO cliente (idCliente, nombre, email) VALUES " + placeholders;
 
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = MySQLConnectionManager.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
             int i = 1;
             for (Cliente c : clientes) {
                 ps.setInt(i++, c.getIdCliente());

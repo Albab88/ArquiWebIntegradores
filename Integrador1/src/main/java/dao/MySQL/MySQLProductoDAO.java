@@ -8,15 +8,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MySQLProductoDAO implements ProductoDAO {
 
     @Override
     public void crear(Producto producto) {
-        Connection conn = MySQLConnectionManager.getConnection();
+        if(Objects.isNull(producto)) return;
+
         String sql = "INSERT INTO producto (idProducto, nombre, valor) VALUES (?, ?, ?)";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = MySQLConnectionManager.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setInt(1, producto.getIdProducto());
             ps.setString(2, producto.getNombre());
             ps.setFloat(3, producto.getValor());
@@ -28,15 +32,16 @@ public class MySQLProductoDAO implements ProductoDAO {
 
     @Override
     public void crear(Collection<Producto> productos) {
-        if (productos.isEmpty()) return;
+        if(Objects.isNull(productos) || productos.isEmpty()) return;
 
-        Connection conn = MySQLConnectionManager.getConnection();
         String placeholders = productos.stream()
             .map(p -> "(?, ?, ?)")
             .collect(Collectors.joining(", "));
         String sql = "INSERT INTO producto (idProducto, nombre, valor) VALUES " + placeholders;
 
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = MySQLConnectionManager.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+
             int i = 1;
             for (Producto p : productos) {
                 ps.setInt(i++, p.getIdProducto());
