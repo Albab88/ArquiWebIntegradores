@@ -1,9 +1,20 @@
-
 services:
 
-  db:
+  mysql-db:
     image: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ""
-    
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: integrador1
+    ports:
+      - "3306:3306"
+
+  postgres-db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: integrador1
+      POSTGRES_USER: root
+    ports:
+      - "5432:5432"
